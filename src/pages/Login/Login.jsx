@@ -22,6 +22,7 @@ const Login = () => {
         await login(email, password)
         // navigate('/profile')
       } 
+      navigate('/profile')
     }
 
 

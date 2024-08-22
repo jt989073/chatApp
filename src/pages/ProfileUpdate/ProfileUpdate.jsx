@@ -43,13 +43,17 @@ const ProfileUpdate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const docRef = doc(db, 'Users', uid)
+
+      
       if(!prevImage && !image){
         toast.error('Upload profile Picture')
+        return
       }
-      const docRef = doc(db, 'Users', uid)
       if(image){
         const imageUrl = await upload(image)
         setPrevImage(imageUrl)
+        console.log('first')
         await updateDoc(docRef, {
           avatar: imageUrl,
           bio,
@@ -60,11 +64,11 @@ const ProfileUpdate = () => {
           bio,
           name
         })
-        const snap = await getDoc(docRef)
-        setUserData(snap.data())
-        console.log(userData)
-        navigate('/chat')
+
       }
+      const snap = await getDoc(docRef)
+      setUserData(snap.data())
+      navigate('/chat')
     } catch (e) {
       console.error(e)
       toast.error(e.message)

@@ -29,11 +29,11 @@ const db = getFirestore(app)
             email,
             name: '',
             avatar: '',
-            bio: 'Hey, ther I am using this super cool chat app',
+            bio: 'Hey, there I am using this super cool chat app',
             lastSeen: Date.now()
         })
         await setDoc(doc(db, 'Chats', user.uid),{
-            chatData: [],
+            chatsData: [],
 
         })
     } catch (e) {
@@ -46,7 +46,6 @@ const login = async ( email, password) => {
     try {
         const res = await signInWithEmailAndPassword(auth, email, password)
         const user = res.user
-        console.log(user)
     } catch(e) {
         console.log(e)
         toast.error(e.code.split('/')[1].split('-').join(' '))
