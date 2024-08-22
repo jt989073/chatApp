@@ -21,6 +21,7 @@
 .menu img{
     max-height: 20px;
     opacity: 0.6;
+    aspect-ratio: 1/1;
     cursor: pointer;
 }
 
@@ -35,6 +36,7 @@
 
 .ls-search img{
     width: 16px;
+    aspect-ratio: 1/1;
 }
 
 .ls-search input{
@@ -52,16 +54,12 @@
 .ls-list{
     display: flex;
     flex-direction: column;
-    height: 70%;
+    height: 60%;
     overflow-y: scroll;
-}
-::-webkit-scrollbar{
-    display: none;
 }
 
 .friends img{
     width: 35px;
-    /* aspect-ratio: 1/1; */
     border-radius: 50%;
 }
 
