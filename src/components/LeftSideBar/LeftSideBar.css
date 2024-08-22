@@ -55,13 +55,9 @@
     height: 70%;
     overflow-y: scroll;
 }
-::-webkit-scrollbar{
-    display: none;
-}
 
 .friends img{
     width: 35px;
-    /* aspect-ratio: 1/1; */
     border-radius: 50%;
 }
 
