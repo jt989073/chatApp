@@ -21,6 +21,7 @@
 .menu img{
     max-height: 20px;
     opacity: 0.6;
+    aspect-ratio: 1/1;
     cursor: pointer;
 }
 
@@ -35,6 +36,7 @@
 
 .ls-search img{
     width: 16px;
+    aspect-ratio: 1/1;
 }
 
 .ls-search input{
