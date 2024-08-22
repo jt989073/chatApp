@@ -17,7 +17,6 @@ const loadUserData = async uid => {
         const userSnap = await getDoc(userRef)
         const userData = userSnap.data()
 
-        console.log(userData)
 
         if(userData.avatar && userData.name){
             navigate('/chat')

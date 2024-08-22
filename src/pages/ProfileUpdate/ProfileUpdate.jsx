@@ -53,7 +53,6 @@ const ProfileUpdate = () => {
       if(image){
         const imageUrl = await upload(image)
         setPrevImage(imageUrl)
-        console.log('first')
         await updateDoc(docRef, {
           avatar: imageUrl,
           bio,
