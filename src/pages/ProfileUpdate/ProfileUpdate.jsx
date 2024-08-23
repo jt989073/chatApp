@@ -17,6 +17,8 @@ const ProfileUpdate = () => {
   const [bio, setBio] = useState("");
   const [uid, setUid] = useState("");
   const [prevImage, setPrevImage] = useState("");
+
+
   const {userData, setUserData} = useContext(AppContext)
 
   useEffect(() => {
@@ -66,6 +68,7 @@ const ProfileUpdate = () => {
 
       }
       const snap = await getDoc(docRef)
+      console.log(snap.data())
       setUserData(snap.data())
       navigate('/chat')
     } catch (e) {

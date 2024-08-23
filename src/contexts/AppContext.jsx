@@ -2,6 +2,7 @@ import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { createContext, useEffect, useState } from "react";
 import { db, auth } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 export const AppContext = createContext()
@@ -36,7 +37,8 @@ const loadUserData = async uid => {
             }
         }, 60000)
     } catch (e) {
-        
+        toast.error(e.message)
+        console.error(e)
     }
 }
 
