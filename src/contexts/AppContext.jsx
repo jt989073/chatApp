@@ -27,11 +27,13 @@ const AppContextProvider = (props) => {
       const userRef = doc(db, "Users", uid);
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
-
-      if (userData.avatar && userData.name) {
-        navigate("/chat");
-      } else {
-        navigate("/profile");
+      console.log(userData)
+      if(userData){
+        if (userData.avatar && userData.name) {
+          navigate("/chat");
+        } else {
+          navigate("/profile");
+        }
       }
 
       await updateDoc(userRef, {
