@@ -6,7 +6,7 @@ import "./RightSideBar.css";
 
 const RightSideBar = () => {
   const {userData} = useContext(AppContext)
-    console.log(userData, 'rsbbbbb')
+ 
 
   return (
     <div className="rs">

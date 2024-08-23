@@ -112,7 +112,12 @@ const LeftSideBar = () => {
       toast.error(e.message);
       console.error(e);
     }
-  };
+  }
+
+
+  const setChat = async (item) => {
+    console.log(item)
+  }
 
   return (
     <div className="ls">
@@ -155,9 +160,10 @@ const LeftSideBar = () => {
               </div>
             ))
           : filtered.map((item, idx) => (
-              <div key={idx} className="friends">
+              <div onClick={() => setChat(item)}key={idx} className="friends">
                 <img src={item.userData.avatar} alt="" />
                 <div>
+                  <div>testing</div>
                   <p>{item.userData.name}</p>
                   <span>{item.lastMessage}</span>
                 </div>

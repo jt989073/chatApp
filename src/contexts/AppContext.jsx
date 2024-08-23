@@ -18,6 +18,9 @@ const AppContextProvider = (props) => {
         const savedChatData = sessionStorage.getItem('chatData');
         return savedChatData ? JSON.parse(savedChatData) : null;
     });
+    const [messagesId, setMessagesId] = useState(null)
+    const [messages, setMessages] = useState([])
+    const [chatUser, setChatUser] = useState(null)
 
     const loadUserData = async (uid) => {
         try {
