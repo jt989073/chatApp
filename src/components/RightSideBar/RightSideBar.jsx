@@ -1,8 +1,13 @@
-import assets from "../../assets/assets";
+import { useContext } from "react";
+import { AppContext } from "../../contexts/AppContext";
 import { logout } from "../../config/firebase";
+import assets from "../../assets/assets";
 import "./RightSideBar.css";
 
 const RightSideBar = () => {
+  const {userData} = useContext(AppContext)
+    console.log(userData, 'rsbbbbb')
+
   return (
     <div className="rs">
       <div className="rs-profile">
