@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 
 const LeftSideBar = () => {
   const navigate = useNavigate();
-  const { userData } = useContext(AppContext);
+  const { userData, chatData } = useContext(AppContext);
   const [search, setSearch] = useState([]);
   const [user, setUser] = useState(null)
   const [showSearch, setShowSearch] = useState(false)
@@ -32,25 +32,38 @@ const LeftSideBar = () => {
         
         const results = querySnap.docs
         .map((doc) => doc.data())
-        .filter((user) => user.id !== userData?.id);
+        .filter((user) => user.id !== userData.id);
+        
         setSearch(results || []);
+
+        let userExist = false
+        chatData.forEach((user) => {
+          console.log(user.rId, results[0].id)
+          if(user.rId === results[0].id){
+            userExist = true
+          }
+        })
+
+        if(!userExist){
+          setUser(results[0].id)
+        }
+
 
       } else {
         setShowSearch(false)
         setSearch([]);
       }
     } catch (e) {
-      
     }
   };
 
   const addChat = async (e, user) => {
-    if(!user || !userData){
+    if(!userData){
       toast.error('You are not logged in, or the other profile does not exist')
       navigate('/')
     }
 
-    const messagesRef = collection(db, 'messages')
+    const messagesRef = collection(db, 'Messages')
     const chatsRef = collection(db, 'Chats')
 
     try {
