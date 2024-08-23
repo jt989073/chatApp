@@ -11,11 +11,11 @@ const RightSideBar = () => {
   return (
     <div className="rs">
       <div className="rs-profile">
-        <img src={assets.profile_img} alt="" />
+        <img src={userData.avatar} alt="" />
         <h3>
-          James Thompsom <img src={assets.green_dot} className="dot" alt="" />
+          {userData.username} <img src={assets.green_dot} className="dot" alt="" />
         </h3>
-        <p>Hey, I am james</p>
+        <p>{userData.bio}</p>
       </div>
       <hr />
       <div className="rs-media">
