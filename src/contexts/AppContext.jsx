@@ -1,5 +1,5 @@
-import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { createContext, useEffect, useState } from "react";
+import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db, auth } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -9,12 +9,10 @@ export const AppContext = createContext();
 const AppContextProvider = (props) => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(() => {
-    // Retrieve userData from sessionStorage on initial load
     const savedUserData = sessionStorage.getItem("userData");
     return savedUserData ? JSON.parse(savedUserData) : null;
   });
   const [chatData, setChatData] = useState(() => {
-    // Retrieve chatData from sessionStorage on initial load
     const savedChatData = sessionStorage.getItem("chatData");
     return savedChatData ? JSON.parse(savedChatData) : null;
   });
@@ -26,9 +24,17 @@ const AppContextProvider = (props) => {
     try {
       const userRef = doc(db, "Users", uid);
       const userSnap = await getDoc(userRef);
-      const userData = userSnap.data();
+      let userDataSnap = userSnap.data();
 
-      if (userData.avatar && userData.name) {
+      if (!userDataSnap) {
+        userDataSnap = JSON.parse(sessionStorage.getItem("userData")) || {};
+      }
+
+      if (!userDataSnap.id) userDataSnap.id = uid;
+      setUserData(userDataSnap);
+      sessionStorage.setItem("userData", JSON.stringify(userDataSnap));
+
+      if (userDataSnap.avatar && userDataSnap.name) {
         navigate("/chat");
       } else {
         navigate("/profile");
@@ -39,16 +45,12 @@ const AppContextProvider = (props) => {
       });
 
       setInterval(async () => {
-        if (auth.chatUser) {
+        if (auth.currentUser) {
           await updateDoc(userRef, {
             lastSeen: Date.now(),
           });
         }
       }, 60000);
-
-      // Set userData and store it in sessionStorage
-      setUserData(userData);
-      sessionStorage.setItem("userData", JSON.stringify(userData));
     } catch (e) {
       toast.error(e.message);
       console.error(e);
@@ -58,23 +60,21 @@ const AppContextProvider = (props) => {
   useEffect(() => {
     if (userData) {
       const chatRef = doc(db, "Chats", userData.id);
-      const unsub = onSnapshot(chatRef, async (res) => {
-        const chatItems = res.data().chatsData;
-        const tempData = [];
-        for (const item of chatItems) {
-          const userRef = doc(db, "Users", item.rId);
-          const userSnap = await getDoc(userRef);
-          const userData = userSnap.data();
-          tempData.push({ ...item, userData });
+      const unSub = onSnapshot(chatRef, async (res) => {
+        const chatItems = res.data().chatsData
+        const tempData = []
+        for (const item of chatItems){
+          const  userRef = doc(db, 'users', item.rId)
+          const userSnap = await getDoc(userRef)
+          const data = userSnap.data()
+          tempData.push({...item, data})
         }
-        const sortedData = tempData.sort((a, b) => b.updatedAt - a.updatedAt);
-        setChatData(sortedData);
-        // Store the sorted chatData in sessionStorage
-        sessionStorage.setItem("chatData", JSON.stringify(sortedData));
-      });
+        setChatData(tempData.sort((a, b) => b.updatedAt - a.updatedAt))
+      })
+
       return () => {
-        unsub();
-      };
+        unSub()
+      }
     }
   }, [userData]);
 
@@ -82,12 +82,12 @@ const AppContextProvider = (props) => {
     userData,
     setUserData: (data) => {
       setUserData(data);
-      sessionStorage.setItem("userData", JSON.stringify(data)); // Persist userData to sessionStorage
+      sessionStorage.setItem("userData", JSON.stringify(data));
     },
     chatData,
     setChatData: (data) => {
       setChatData(data);
-      sessionStorage.setItem("chatData", JSON.stringify(data)); // Persist chatData to sessionStorage
+      sessionStorage.setItem("chatData", JSON.stringify(data));
     },
     loadUserData,
     messages,

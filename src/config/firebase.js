@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { browserSessionPersistence, createUserWithEmailAndPassword, getAuth, setPersistence, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 
 const firebaseConfig = {
@@ -24,7 +24,6 @@ const signup = async (username, email, password) => {
         await setPersistence(auth, browserSessionPersistence);
         const res = await createUserWithEmailAndPassword(auth, email, password);
         const user = res.user;
-
         await setDoc(doc(db, 'Users', user.uid), {
             id: user.uid,
             username: username.toLowerCase(),
@@ -40,6 +39,8 @@ const signup = async (username, email, password) => {
             chatsData: [],
         });
 
+
+
     } catch (e) {
         console.error(e);
         toast.error(e.code.split('/')[1].split('-').join(' '));
@@ -52,6 +53,13 @@ const login = async (email, password) => {
 
         const res = await signInWithEmailAndPassword(auth, email, password);
         const user = res.user;
+        
+        const userRef = doc(db, 'Users', user.uid)
+        const userDoc = await getDoc(userRef)
+        const userSnap = userDoc.data()
+        console.log(userSnap)
+        sessionStorage.setItem('userData', userSnap)
+        console.log(sessionStorage.getItem('userData'))
         
         console.log('User signed in:', user);
         

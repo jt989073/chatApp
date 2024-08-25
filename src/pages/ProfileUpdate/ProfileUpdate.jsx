@@ -1,16 +1,17 @@
-import assets from "../../assets/assets";
 import { useContext, useEffect, useState } from "react";
-import "./ProfileUpdate.css";
-import upload from "../../lib/upload";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "../../config/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
+import upload from "../../lib/upload";
 import { AppContext } from "../../contexts/AppContext";
+import assets from "../../assets/assets";
+import "./ProfileUpdate.css";
 
 const ProfileUpdate = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [image, setImage] = useState(false);
   const [name, setName] = useState("");
@@ -18,15 +19,15 @@ const ProfileUpdate = () => {
   const [uid, setUid] = useState("");
   const [prevImage, setPrevImage] = useState("");
 
-
-  const {userData, setUserData} = useContext(AppContext)
+  const {setUserData } = useContext(AppContext);
 
   useEffect(() => {
-    onAuthStateChanged(auth, async user => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUid(user.uid);
         const docRef = doc(db, "Users", user.uid);
         const docSnap = await getDoc(docRef);
+
         if (docSnap.data().name) {
           setName(docSnap.data().name);
         }
@@ -37,7 +38,7 @@ const ProfileUpdate = () => {
           setPrevImage(docSnap.data().avatar);
         }
       } else {
-        navigate('/')
+        navigate("/");
       }
     });
   }, []);
@@ -45,35 +46,31 @@ const ProfileUpdate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const docRef = doc(db, 'Users', uid)
-
-      
-      if(!prevImage && !image){
-        toast.error('Upload profile Picture')
-        return
+      if (!prevImage && !image) {
+        toast.error("Upload profile Picture");
+        return;
       }
-      if(image){
-        const imageUrl = await upload(image)
-        setPrevImage(imageUrl)
+      const docRef = doc(db, "Users", uid);
+      if (image) {
+        const imageUrl = await upload(image);
+        setPrevImage(imageUrl);
         await updateDoc(docRef, {
           avatar: imageUrl,
           bio,
-          name
-        })
-      }else {
+          name,
+        });
+      } else {
         await updateDoc(docRef, {
           bio,
-          name
-        })
-
+          name,
+        });
       }
-      const snap = await getDoc(docRef)
-      console.log(snap.data())
-      setUserData(snap.data())
-      navigate('/chat')
+      const snap = await getDoc(docRef);
+      setUserData(snap.data());
+      navigate("/chat");
     } catch (e) {
-      console.error(e)
-      toast.error(e.message)
+      console.error(e);
+      toast.error(e.message);
     }
   };
 
@@ -113,7 +110,13 @@ const ProfileUpdate = () => {
         </form>
         <img
           className="profile-pic"
-          src={image ? URL.createObjectURL(image) : prevImage ? prevImage : assets.logo_icon}
+          src={
+            image
+              ? URL.createObjectURL(image)
+              : prevImage
+              ? prevImage
+              : assets.logo_icon
+          }
         />
       </div>
     </div>
