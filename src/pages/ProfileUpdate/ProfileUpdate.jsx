@@ -26,7 +26,7 @@ const ProfileUpdate = () => {
         toast.error("Upload profile picture")
         return 0;
       }
-      const docRef = doc(db, "users", uid);
+      const docRef = doc(db, "Users", uid);
       if (image) {
         const imgUrl = await upload(image);
         setPrevImage(imgUrl);
@@ -55,7 +55,7 @@ const ProfileUpdate = () => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUid(user.uid);
-        const docRef = doc(db, "users", user.uid);
+        const docRef = doc(db, "Users", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.data().name) {
           setName(docSnap.data().name);

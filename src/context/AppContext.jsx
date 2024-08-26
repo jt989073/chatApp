@@ -17,7 +17,7 @@ const AppContextProvider = (props) => {
 
   const loadUserData = async (uid) => {
     try {
-      const userRef = doc(db, "users", uid);
+      const userRef = doc(db, "Users", uid);
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
       setUserData(userData);
@@ -43,17 +43,17 @@ const AppContextProvider = (props) => {
 
   useEffect(() => {
     if (userData) {
-      const chatRef = doc(db, "chats", userData.id);
+      const chatRef = doc(db, "Chats", userData.id);
       const unSub = onSnapshot(chatRef, async (res) => {
         const chatItems = res.data().chatsData;
         const tempData = [];
         for (const item of chatItems) {
-          const userRef = doc(db, "users", item.rId);
+          const userRef = doc(db, "Users", item.rId);
           const userSnap = await getDoc(userRef);
           const userData = userSnap.data();
           tempData.push({ ...item, userData });
         }
-        setChatData(tempData.sort((a, b) => b.updatedAt - a.updatedAt));
+        setChatData(tempData.sort((a, b) => b.updatedAt - a.updatedAt)); 
       });
 
       return () => {
@@ -62,23 +62,6 @@ const AppContextProvider = (props) => {
     }
   }, [userData]);
 
-  useEffect(() => {
-    if (userData) {
-      setInterval(async () => {
-        const chatRef = doc(db, "chats", userData.id);
-        const data = await getDoc(chatRef);
-        const chatItems = data.data().chatsData;
-        const tempData = [];
-        for (const item of chatItems) {
-          const userRef = doc(db, "users", item.rId);
-          const userSnap = await getDoc(userRef);
-          const userData = userSnap.data();
-          tempData.push({ ...item, userData });
-        }
-        setChatData(tempData.sort((a, b) => b.updatedAt - a.updatedAt));
-      }, 10000);
-    }
-  }, [userData]);
 
   const value = {
     userData,

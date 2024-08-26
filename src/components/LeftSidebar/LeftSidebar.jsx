@@ -21,7 +21,7 @@ const LeftSidebar = () => {
 
             if (input) {
                 setShowSearch(true);
-                const userRef = collection(db, "users");
+                const userRef = collection(db, "Users");
                 const q = query(userRef, where("username", "==", input.toLowerCase()));
                 const querySnap = await getDocs(q);
                 if (!querySnap.empty && querySnap.docs[0].data().id !== userData.id) {
@@ -48,8 +48,8 @@ const LeftSidebar = () => {
     }
 
     const addChat = async () => {
-        const messagesRef = collection(db, "messages");
-        const chatsRef = collection(db, "chats");
+        const messagesRef = collection(db, "Messages");
+        const chatsRef = collection(db, "Chats");
         try {
             if (user.id === userData.id) {
                 return 0
@@ -81,7 +81,7 @@ const LeftSidebar = () => {
                 }),
             });
 
-            const uSnap = await getDoc(doc(db, "users", user.id));
+            const uSnap = await getDoc(doc(db, "Users", user.id));
             const uData = uSnap.data();
             setChat({
                 messageId: newMessageRef.id,
@@ -101,7 +101,7 @@ const LeftSidebar = () => {
     const setChat = async (item) => {
         setMessagesId(item.messageId)
         setChatUser(item)
-        const userChatsRef = doc(db, "chats", userData.id);
+        const userChatsRef = doc(db, "Chats", userData.id);
         const userChatsSnapshot = await getDoc(userChatsRef);
         const userChatsData = userChatsSnapshot.data();
         const chatIndex = userChatsData.chatsData.findIndex((c) => c.messageId === item.messageId);
@@ -115,7 +115,7 @@ const LeftSidebar = () => {
     useEffect(() => {
         const updateChatUserData = async () => {
             if (chatUser) {
-                const userRef = doc(db, "users", chatUser.userData.id);
+                const userRef = doc(db, "Users", chatUser.userData.id);
                 const userSnap = await getDoc(userRef);
                 const userData = userSnap.data();
                 setChatUser(prev => ({ ...prev, userData: userData }))

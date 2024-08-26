@@ -19,7 +19,7 @@ const ChatBox = () => {
     try {
 
       if (input && messagesId) {
-        await updateDoc(doc(db, "messages", messagesId), {
+        await updateDoc(doc(db, "Messages", messagesId), {
           messages: arrayUnion({
             sId: userData.id,
             text: input,
@@ -30,7 +30,7 @@ const ChatBox = () => {
         const userIDs = [chatUser.rId, userData.id];
 
         userIDs.forEach(async (id) => {
-          const userChatsRef = doc(db, "chats", id);
+          const userChatsRef = doc(db, "Chats", id);
           const userChatsSnapshot = await getDoc(userChatsRef);
 
           if (userChatsSnapshot.exists()) {
@@ -74,7 +74,7 @@ const ChatBox = () => {
     const fileUrl = await upload(e.target.files[0])
 
     if (fileUrl && messagesId) {
-      await updateDoc(doc(db, "messages", messagesId), {
+      await updateDoc(doc(db, "Messages", messagesId), {
         messages: arrayUnion({
           sId: userData.id,
           image: fileUrl,
@@ -85,12 +85,12 @@ const ChatBox = () => {
       const userIDs = [chatUser.rId, userData.id];
 
       userIDs.forEach(async (id) => {
-        const userChatsRef = doc(db, "chats", id);
+        const userChatsRef = doc(db, "Chats", id);
         const userChatsSnapshot = await getDoc(userChatsRef);
 
         if (userChatsSnapshot.exists()) {
           const userChatsData = userChatsSnapshot.data();
-          const chatIndex = userChatsData.chatsData.findIndex((c) => c.messageId === messagesId);
+          const chatIndex = userChatsData.chatsData.findIndex((ele) => ele.messageId === messagesId);
           userChatsData.chatsData[chatIndex].lastMessage = "Image";
           userChatsData.chatsData[chatIndex].updatedAt = Date.now();
           await updateDoc(userChatsRef, {
@@ -108,7 +108,7 @@ const ChatBox = () => {
 
   useEffect(() => {
     if (messagesId) {
-      const unSub = onSnapshot(doc(db, "messages", messagesId), (res) => {
+      const unSub = onSnapshot(doc(db, "Messages", messagesId), (res) => {
         setMessages(res.data().messages.reverse());
       });
       return () => {
@@ -117,6 +117,8 @@ const ChatBox = () => {
     }
 
   }, [messagesId]);
+
+  console.log(chatUser, userData, 'lakdfjoakjsdfklajsdflkjasdf')
 
   return chatUser ? (
     <div className={`chat-box ${chatVisible ? "" : "hidden"}`}>
@@ -137,7 +139,7 @@ const ChatBox = () => {
                   : <p className="msg">{msg["text"]}</p>
                 }
                 <div>
-                  <img src={msg.sId === userData.id ? userData.avatar : chatUser.userData.avatar} alt="" />
+                  <img src={msg.sId === userData.id ? userData.avatar : chatUser.userData.avatar } alt="" />
                   <p>{convertTimestamp(msg.createdAt)}</p>
                 </div>
               </div>

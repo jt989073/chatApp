@@ -22,7 +22,7 @@ const db = getFirestore(app)
 
 const signup = async (username, email, password) => {
     try {
-        const usersRef = collection(db,'users')
+        const usersRef = collection(db,'Users')
         const q = query(usersRef,where("username", "==" ,username.toLowerCase()))
         const querySnapshot = await getDocs(q)
         if(querySnapshot.docs.length>0){
@@ -31,7 +31,7 @@ const signup = async (username, email, password) => {
         }
         const res = await createUserWithEmailAndPassword(auth, email, password)
         const user = res.user
-        await setDoc(doc(db,"users",user.uid), {
+        await setDoc(doc(db,"Users",user.uid), {
             id: user.uid,
             username:username.toLowerCase(),
             email,
@@ -40,7 +40,7 @@ const signup = async (username, email, password) => {
             bio:"Hey, There i am using chat app",
             lastSeen: Date.now()
         });
-        await setDoc(doc(db,"chats",user.uid), {
+        await setDoc(doc(db,"Chats",user.uid), {
             chatsData:[]
         });
 
@@ -69,7 +69,7 @@ const resetPass = async (email) => {
         return null
     }
     try {
-        const userRef = collection(db, "users")
+        const userRef = collection(db, "Users")
         const q = query(userRef, where("email", "==", email))
         const querySnap = await getDocs(q)
         if (!querySnap.empty) {
