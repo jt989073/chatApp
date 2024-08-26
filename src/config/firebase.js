@@ -24,7 +24,8 @@ const signup = async (username, email, password) => {
         await setPersistence(auth, browserSessionPersistence);
         const res = await createUserWithEmailAndPassword(auth, email, password);
         const user = res.user;
-        await setDoc(doc(db, 'Users', user.uid), {
+        
+        const userData = {
             id: user.uid,
             username: username.toLowerCase(),
             email,
@@ -32,15 +33,22 @@ const signup = async (username, email, password) => {
             avatar: '',
             bio: 'Hey, there I am using this super cool chat app',
             lastSeen: Date.now()
-        });
-
-       
-        await setDoc(doc(db, 'Chats', user.uid), {
+        };
+        
+        await setDoc(doc(db, 'Users', user.uid), userData);
+        
+        const chatData = {
             chatsData: [],
-        });
+        };
+        
+        await setDoc(doc(db, 'Chats', user.uid), chatData);
+        
+        // Store userData and chatData in session storage
+        sessionStorage.setItem('userData', JSON.stringify(userData));
+        sessionStorage.setItem('chatData', JSON.stringify(chatData));
 
-
-
+        // Optionally, navigate to the chat page or user dashboard
+        navigate("/chat");
     } catch (e) {
         console.error(e);
         toast.error(e.code.split('/')[1].split('-').join(' '));
@@ -58,7 +66,7 @@ const login = async (email, password) => {
         const userDoc = await getDoc(userRef)
         const userSnap = userDoc.data()
         console.log(userSnap)
-        sessionStorage.setItem('userData', userSnap)
+
         console.log(sessionStorage.getItem('userData'))
         
         console.log('User signed in:', user);
@@ -72,11 +80,17 @@ const login = async (email, password) => {
 
 const logout = async () => {
     try {
-        await signOut(auth)
+        await signOut(auth);
+        
+        // Clear session storage items
+        sessionStorage.removeItem('userData');
+        sessionStorage.removeItem('chatData');
+        
+        // Optionally, navigate to the login page or home page
+        navigate("/login");
     } catch (e) {
-        console.log(e)
-
-        toast.error(e.code.split('/')[1].split('-').join(' '))
+        console.log(e);
+        toast.error(e.code.split('/')[1].split('-').join(' '));
     }
 }
 

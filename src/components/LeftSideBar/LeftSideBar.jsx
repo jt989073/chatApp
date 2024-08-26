@@ -19,7 +19,14 @@ import { toast } from "react-toastify";
 
 const LeftSideBar = () => {
   const navigate = useNavigate();
-  const { userData, chatData, chatUser, setChatUser, setMessagesId, messagesId } = useContext(AppContext);
+  const {
+    userData,
+    chatData,
+    chatUser,
+    setChatUser,
+    setMessagesId,
+    messagesId,
+  } = useContext(AppContext);
   const [search, setSearch] = useState([]);
   const [user, setUser] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
@@ -34,32 +41,54 @@ const LeftSideBar = () => {
   //   }
   // });
 
-
-
-  const handleSearch = async e => {
+  const inputHandler = async (e) => {
     try {
-      const input = e.target.value.toLowerCase()
-      if(input){
-        setShowSearch(true)
-        const userRef = collection(db, 'Users')
-        
-        //#TODO: make this query dynamic
-        const q = query(userRef, where('username', '==', input))
-        
-        const querySnap = await getDocs(q)
-        if(!querySnap.empty && querySnap.docs[0].data().id !== userData.id){
-          setUser(querySnap.docs[0].data())
-          console.log(querySnap, querySnap.docs[0].data())
-        }else{
-          setUser(null)
-        }
-      } else{
-        setShowSearch(false)
+      const input = e.target.value;
+      const userRef = collection(db, 'Users')
+      const q = query(userRef, where('username', '==', input.toLowerCase()))
+      const querySnap = await getDocs(q)
+      if(!querySnap.empty){
+        console.log(querySnap.docs[0].data())
       }
+
     } catch (error) {
-      
+      console.log(error);
+      toast.error(error);
     }
-  }
+  };
+
+  // const handleSearch = async e => {
+  //   try {
+  //     const input = e.target.value.toLowerCase()
+  //     if(input){
+  //       setShowSearch(true)
+  //       const userRef = collection(db, 'Users')
+
+  //       //#TODO: make this query dynamic
+  //       const q = query(userRef, where('username', '==', input))
+
+  //       const querySnap = await getDocs(q)
+  //       if(!querySnap.empty && querySnap.docs[0].id !== userData.id){
+  //         let userExists = false
+  //         chatData.map(chat => {
+  //           if(chat.rId === querySnap.docs[0].id){
+  //             userExists = true
+  //           }
+  //           if(!userExists){
+  //               console.log(querySnap.docs[0].data())
+  //               setUser(querySnap.docs[0])
+  //             }
+  //         })
+  //       }else{
+  //         setUser(null)
+  //       }
+  //     } else{
+  //       setShowSearch(false)
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
   // const handleSearch = async (e) => {
   //   try {
@@ -101,41 +130,40 @@ const LeftSideBar = () => {
   // };
 
   const addChat = async () => {
-    const messagesRef = collection(db, 'Messages')
-    const chatsRef = collection(db, 'Chats')
+    const messagesRef = collection(db, "Messages");
+    const chatsRef = collection(db, "Chats");
     try {
-      const newMessageRef = doc(messagesRef)
+      const newMessageRef = doc(messagesRef);
 
       await setDoc(newMessageRef, {
         createdAt: serverTimestamp(),
-        messages: []
-      })
+        messages: [],
+      });
 
       await updateDoc(doc(chatsRef, user.id), {
-        chatsData:arrayUnion({
+        chatsData: arrayUnion({
           messageId: newMessageRef.id,
-          lastMessage: '',
+          lastMessage: "",
           rId: userData.id,
           updatedAt: Date.now(),
-          messageSeen: true
-        })
-      })
+          messageSeen: true,
+        }),
+      });
 
       await updateDoc(doc(chatsRef, userData.id), {
-        chatsData:arrayUnion({
+        chatsData: arrayUnion({
           messageId: newMessageRef.id,
-          lastMessage: '',
+          lastMessage: "",
           rId: user.id,
           updatedAt: Date.now(),
-          messageSeen: true
-        })
-      })
-
+          messageSeen: true,
+        }),
+      });
     } catch (error) {
-      toast.error(error.message)
-      console.log(error)
+      toast.error(error.message);
+      console.log(error);
     }
-  }
+  };
 
   // const addChat = async (e, user) => {
   //   if (!userData || !user) {
@@ -143,21 +171,21 @@ const LeftSideBar = () => {
   //     navigate("/");
   //     return;
   //   }
-  
+
   //   const messagesRef = collection(db, "Messages");
   //   const chatsRef = collection(db, "Chats");
-  
+
   //   try {
   //     const newMessageRef = doc(messagesRef);
-  
+
   //     await setDoc(newMessageRef, {
   //       createdAt: serverTimestamp(),
   //       messages: [],
   //     });
-  
+
   //     const userChatRef = doc(chatsRef, user.id);
   //     const currentUserChatRef = doc(chatsRef, userData.id);
-  
+
   //     await updateDoc(userChatRef, {
   //       chatsData: arrayUnion({
   //         messageId: newMessageRef.id,
@@ -167,7 +195,7 @@ const LeftSideBar = () => {
   //         messageSeen: true,
   //       }),
   //     });
-  
+
   //     await updateDoc(currentUserChatRef, {
   //       chatsData: arrayUnion({
   //         messageId: newMessageRef.id,
@@ -182,15 +210,14 @@ const LeftSideBar = () => {
   //     console.error(e);
   //   }
   // };
-  
-
 
   const setChat = async (item) => {
-    setMessagesId(item.messageId)
-    setChatUser(item)
-  }
+    setMessagesId(item.messageId);
+    setChatUser(item);
+  };
 
-  console.log(user)
+  // chatData.filter(ele => ele !== undefined)
+  console.log(chatData);
 
   return (
     <div className="ls">
@@ -209,37 +236,38 @@ const LeftSideBar = () => {
         <div className="ls-search">
           <img src={assets.search_icon} alt="" />
           <input
-            onChange={handleSearch}
+            onChange={inputHandler}
             type="text"
             placeholder="Search here.."
           />
         </div>
       </div>
       <div className="ls-list">
-        {showSearch && user
-          ? 
-              <div
-                onClick={(e) => {
-                  addChat(e, user);
-                }}
-                className="friends add-user"
-              >
-                <img src={user.avatar} alt="" />
-                <div>
-                  <p>{user.name}</p>
-                  <span>{user.lastMessage || 'start a convo'}</span>
-                </div>
+        {showSearch && user ? (
+          <div
+            onClick={(e) => {
+              addChat(e, user);
+            }}
+            className="friends add-user"
+          >
+            <img src={user.avatar} alt="" />
+            <div>
+              <p>{user.name}</p>
+              <span>{user.lastMessage || "start a convo"}</span>
+            </div>
+          </div>
+        ) : (
+          chatData.map((item, idx) => (
+            <div onClick={() => setChat(item)} key={idx} className="friends">
+              <div>{item.userData}</div>
+              <img src={item.userData.avatar} alt="" />
+              <div>
+                <p>{item.userData.name}</p>
+                <span>{item.lastMessage}</span>
               </div>
-          : Array(12).fill('').map((item, idx) => (
-              <div onClick={() => setChat(item)}key={idx} className="friends">
-                <img src={item?.userData?.avatar} alt="" />
-                <div>
-                  <div>testing</div>
-                  <p>{item?.userData?.name}</p>
-                  <span>{item?.lastMessage}</span>
-                </div>
-              </div>
-            ))}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

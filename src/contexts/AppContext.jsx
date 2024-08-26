@@ -24,17 +24,17 @@ const AppContextProvider = (props) => {
     try {
       const userRef = doc(db, "Users", uid);
       const userSnap = await getDoc(userRef);
-      let userDataSnap = userSnap.data();
+      let userData = userSnap.data();
 
-      if (!userDataSnap) {
-        userDataSnap = JSON.parse(sessionStorage.getItem("userData")) || {};
+      if (!userData) {
+        userData = JSON.parse(sessionStorage.getItem("userData")) || {};
       }
 
-      if (!userDataSnap.id) userDataSnap.id = uid;
-      setUserData(userDataSnap);
-      sessionStorage.setItem("userData", JSON.stringify(userDataSnap));
+      if (!userData.id) userData.id = uid;
+      setUserData(userData);
+      sessionStorage.setItem("userData", JSON.stringify(userData));
 
-      if (userDataSnap.avatar && userDataSnap.name) {
+      if (userData.avatar && userData.name) {
         navigate("/chat");
       } else {
         navigate("/profile");
