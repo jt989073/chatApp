@@ -20,13 +20,12 @@ const RightSidebar = () => {
   },[messages])
   
 
-
   
   return (
     <div className='rs'>
       <div className='rs-profile'>
         <img src={userData.avatar} alt="" />
-        <h3>{Date.now() - userData.lastSeen <= 70000 ?<img className='dot' src={assets.green_dot} alt=''/>:null}{userData.name}</h3>
+        <h3>{(Date.now() - userData.lastSeen) < 70000 ? <img className='dot' src={assets.green_dot} alt=''/> : null}{userData.name}</h3>
         <p>{userData.bio}</p>
       </div>
       <hr />
