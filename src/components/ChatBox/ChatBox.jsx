@@ -118,7 +118,7 @@ const ChatBox = () => {
 
   }, [messagesId]);
 
-  console.log(chatUser, userData, 'lakdfjoakjsdfklajsdflkjasdf')
+
 
   return chatUser ? (
     <div className={`chat-box ${chatVisible ? "" : "hidden"}`}>
