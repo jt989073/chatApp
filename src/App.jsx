@@ -1,42 +1,42 @@
-import { useContext, useEffect } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import { onAuthStateChanged } from "firebase/auth";
-
-import "react-toastify/dist/ReactToastify.css";
-
-import Login from "./pages/Login";
-import ProfileUpdate from "./pages/ProfileUpdate";
-import Chat from "./pages/Chat";
-import { auth } from "./config/firebase";
-import { AppContext } from "./contexts/AppContext";
+import React, { useContext, useEffect } from 'react'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Login from './pages/Login/Login';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from './config/firebase';
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import Chat from './pages/Chat/Chat';
+import ProfileUpdate from './pages/ProfileUpdate/ProfileUpdate';
+import { AppContext } from './context/AppContext';
 
 const App = () => {
+
   const navigate = useNavigate();
-  const { loadUserData } = useContext(AppContext);
+  const {loadUserData,setChatUser,setMessagesId} = useContext(AppContext);
 
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        console.log(user)
-        navigate("/chat");
-        await loadUserData(user.uid)
-      } else {
-        navigate("/");
+        loadUserData(user.uid);
       }
-    });
-  }, []);
+      else{
+        setChatUser(null)
+        setMessagesId(null)
+        navigate('/')
+      }
+    })
+  }, [])
 
   return (
     <>
       <ToastContainer />
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/profile" element={<ProfileUpdate />} />
+        <Route path='/chat' element={<Chat />} />
+        <Route path='/' element={<Login />} />
+        <Route path='/profile' element={<ProfileUpdate />} />
       </Routes>
     </>
-  );
-};
+  )
+}
 
-export default App;
+export default App

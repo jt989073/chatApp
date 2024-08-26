@@ -1,98 +1,89 @@
-// Import the functions you need from the SDKs you need
+
 import { initializeApp } from "firebase/app";
-import { browserSessionPersistence, createUserWithEmailAndPassword, getAuth, setPersistence, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, getAuth, sendPasswordResetEmail, signInWithEmailAndPassword, signOut} from 'firebase/auth'
+import { collection, doc, getDocs, getFirestore, query, setDoc, where } from 'firebase/firestore'
 import { toast } from "react-toastify";
 
+// --------- Paste Your Firebase Config File Here ---------
+
 const firebaseConfig = {
-  apiKey: "AIzaSyCuP8xp6OawPR-UUK1UkPYhVyBczhrz50I",
-  authDomain: "chatapp-442b3.firebaseapp.com",
-  projectId: "chatapp-442b3",
-  storageBucket: "chatapp-442b3.appspot.com",
-  messagingSenderId: "768622212879",
-  appId: "1:768622212879:web:475044f2bb7161da33f07a"
-};
+    apiKey: "AIzaSyAnEqfY11yZKBcBpPjxGlwq3JD_r94lS2Q",
+    authDomain: "chat-app-3541d.firebaseapp.com",
+    projectId: "chat-app-3541d",
+    storageBucket: "chat-app-3541d.appspot.com",
+    messagingSenderId: "493229185580",
+    appId: "1:493229185580:web:755f9744b60af8ad48cf89",
+    measurementId: "G-F8VZ2VBP4G"
+  };
 
-
-
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const db = getFirestore(app)
 
 const signup = async (username, email, password) => {
     try {
-        await setPersistence(auth, browserSessionPersistence);
-        const res = await createUserWithEmailAndPassword(auth, email, password);
-        const user = res.user;
-        
-        const userData = {
+        const usersRef = collection(db,'users')
+        const q = query(usersRef,where("username", "==" ,username.toLowerCase()))
+        const querySnapshot = await getDocs(q)
+        if(querySnapshot.docs.length>0){
+            toast.error("Username already taken")
+            return 0;
+        }
+        const res = await createUserWithEmailAndPassword(auth, email, password)
+        const user = res.user
+        await setDoc(doc(db,"users",user.uid), {
             id: user.uid,
-            username: username.toLowerCase(),
+            username:username.toLowerCase(),
             email,
-            name: '',
-            avatar: '',
-            bio: 'Hey, there I am using this super cool chat app',
+            name:"",
+            avatar:"",
+            bio:"Hey, There i am using chat app",
             lastSeen: Date.now()
-        };
-        
-        await setDoc(doc(db, 'Users', user.uid), userData);
-        
-        const chatData = {
-            chatsData: [],
-        };
-        
-        await setDoc(doc(db, 'Chats', user.uid), chatData);
-        
-        // Store userData and chatData in session storage
-        sessionStorage.setItem('userData', JSON.stringify(userData));
-        sessionStorage.setItem('chatData', JSON.stringify(chatData));
+        });
+        await setDoc(doc(db,"chats",user.uid), {
+            chatsData:[]
+        });
 
-        // Optionally, navigate to the chat page or user dashboard
-        navigate("/chat");
-    } catch (e) {
-        console.error(e);
-        toast.error(e.code.split('/')[1].split('-').join(' '));
+    } catch (error) {
+        console.error(error)
+        toast.error(error.code.split('/')[1].split('-').join(" "))
     }
 }
 
 const login = async (email, password) => {
     try {
-        await setPersistence(auth, browserSessionPersistence);
-
-        const res = await signInWithEmailAndPassword(auth, email, password);
-        const user = res.user;
-        
-        const userRef = doc(db, 'Users', user.uid)
-        const userDoc = await getDoc(userRef)
-        const userSnap = userDoc.data()
-        console.log(userSnap)
-
-        console.log(sessionStorage.getItem('userData'))
-        
-        console.log('User signed in:', user);
-        
-    } catch (e) {
-        console.log(e);
-        toast.error(e.code.split('/')[1].split('-').join(' '));
+        await signInWithEmailAndPassword(auth, email, password)
+    } catch (error) {
+        console.error(error)
+        toast.error(error.code.split('/')[1].split('-').join(" "))
     }
 }
 
+const logout = () => {
+    signOut(auth)
+}
 
-const logout = async () => {
+const resetPass = async (email) => {
+    if (!email) {
+        toast.error("Enter your email")
+        return null
+    }
     try {
-        await signOut(auth);
-        
-        // Clear session storage items
-        sessionStorage.removeItem('userData');
-        sessionStorage.removeItem('chatData');
-        
-        // Optionally, navigate to the login page or home page
-        navigate("/login");
-    } catch (e) {
-        console.log(e);
-        toast.error(e.code.split('/')[1].split('-').join(' '));
+        const userRef = collection(db, "users")
+        const q = query(userRef, where("email", "==", email))
+        const querySnap = await getDocs(q)
+        if (!querySnap.empty) {
+            await sendPasswordResetEmail(auth,email)
+            toast.success("Reset Email Sent")
+        }
+        else {
+            toast.error("Email doesn't exists")
+        }
+    } catch (error) {
+        console.error(error)
+        toast.error(error.message)
     }
+   
 }
 
-
-export {signup,login, logout, auth, db}
+export { auth, db, login, signup, logout, resetPass};
