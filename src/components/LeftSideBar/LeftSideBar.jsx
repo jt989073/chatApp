@@ -19,8 +19,8 @@ import { toast } from "react-toastify";
 
 const LeftSideBar = () => {
   const navigate = useNavigate();
-  const { userData, chatData, chatUser, setChatUser, setMessagesId, messagesId } = useContext(AppContext);
-  const [search, setSearch] = useState([]);
+  const { userData,  setMessagesId,} = useContext(AppContext);
+  // const [search, setSearch] = useState([]);
   const [user, setUser] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
 
@@ -41,7 +41,6 @@ const LeftSideBar = () => {
         const querySnap = await getDocs(q)
         if(!querySnap.empty && querySnap.docs[0].data().id !== userData.id){
           setUser(querySnap.docs[0].data())
-          console.log(querySnap, querySnap.docs[0].data())
         }else{
           setUser(null)
         }
@@ -49,7 +48,7 @@ const LeftSideBar = () => {
         setShowSearch(false)
       }
     } catch (error) {
-      
+      toast.error(error.message)
     }
   }
 
@@ -87,7 +86,6 @@ const LeftSideBar = () => {
 
     } catch (error) {
       toast.error(error.message)
-      console.log(error)
     }
   }
 
@@ -106,7 +104,7 @@ const LeftSideBar = () => {
           <div className="menu">
             <img src={assets.menu_icon} alt="" />
             <div className="sub-menu">
-              <p onClick={(e) => navigate("/profile")}>Edit Profile</p>
+              <p onClick={() => navigate("/profile")}>Edit Profile</p>
               <hr />
               <p>Logout</p>
             </div>
