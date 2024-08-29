@@ -29,12 +29,6 @@ const RightSidebar = () => {
         <p>{userData.bio}</p>
       </div>
       <hr />
-      <div className="rs-media">
-        <p>Media</p>
-        <div>
-          {msgImages && msgImages.map((url,index)=>(<img onClick={()=>window.open(url)} key={index} src={url} alt="" />))}
-        </div>
-      </div>
       <button onClick={()=>logout()}>Logout</button>
     </div>
   ) 

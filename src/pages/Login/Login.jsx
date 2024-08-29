@@ -18,6 +18,14 @@ const Login = () => {
     }
   };
 
+  const demoOneClick = (e) => {
+    login("demo@example.com", "demo123");
+  };
+
+  const demoTwoClick = (e) => {
+    login("demo-two@example.com", "demo1234");
+  };
+
   return (
     <div className="login">
       <img className="logo" src={assets.logo_big} alt="" />
@@ -52,10 +60,14 @@ const Login = () => {
         <button type="submit">
           {currState === "Sign up" ? "Create account" : "Login now"}
         </button>
-        <div className="login-term">
-          <input type="checkbox" />
-          <p>Agree to the terms of use & privacy policy.</p>
-        </div>
+        <p className="login-toggle">
+          Login using this browser{" "}
+          <span onClick={demoOneClick}>Demo User One</span>
+        </p>
+        <p className="login-toggle">
+          Login using incognito mode or another browser{" "}
+          <span onClick={demoOneClick}>Demo User Two</span>
+        </p>
         <div className="login-forgot">
           {currState === "Sign up" ? (
             <p className="login-toggle">
