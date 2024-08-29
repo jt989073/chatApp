@@ -66,7 +66,7 @@ const Login = () => {
         </p>
         <p className="login-toggle">
           Login using incognito mode or another browser{" "}
-          <span onClick={demoOneClick}>Demo User Two</span>
+          <span onClick={demoTwoClick}>Demo User Two</span>
         </p>
         <div className="login-forgot">
           {currState === "Sign up" ? (
